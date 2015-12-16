@@ -19,40 +19,6 @@
     <![endif]-->
   </head>
   <body>
-    <nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">AeonPOS</a>
-    </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-        <li><a href="#">Link</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">One more separated link</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
 
 <div class="input-group">
   <span class="input-group-addon">
@@ -61,7 +27,20 @@
   <!-- <input type="label" class="form-control">Edit Tables</input> -->
 </div>
 
-<button id="drop_tables" class="btn btn-danger">Drop "tables" Table</button>
+<div id="input-group" class="input-group">
+  <span class="input-group-addon" id="basic-addon1">#</span>
+  <input id="tbl-name" type="text" class="form-control" placeholder="table number" aria-describedby="basic-addon1">
+  <span class="input-group-addon" id="basic-addon1">MAX PAX</span>
+  <input id="tbl-maxQty" type="text" class="form-control" placeholder="max PAX" value="4" aria-describedby="basic-addon1">
+  <span class="input-group-addon" id="basic-addon1">H</span>
+  <input id="tbl-height" type="text" class="form-control" placeholder="height" value="50" aria-describedby="basic-addon1">
+  <span class="input-group-addon" id="basic-addon1">W</span>
+  <input id="tbl-width" type="text" class="form-control" placeholder="width" value="50" aria-describedby="basic-addon1">
+</div>
+  <!-- <input type="label" class="form-control">Edit Tables</input> -->
+</div>
+
+<button id="drop_tables" class="btn btn-danger pull-right">Drop "tables" Table</button>
 
 <button id="add_table" class="btn btn-success">Add Table</button>
 
@@ -105,7 +84,7 @@
 
     $('#add_table').prop('disabled',!CanvasEditable);
     $('#drop_tables').prop('disabled',!CanvasEditable);
-
+    $('#input-group').prop('disabled',!CanvasEditable);
     var s = new CanvasState(document.getElementById('canvas1'),CanvasEditable);
     db.drawAllTables(s);
     $('#editable').change(function(){
@@ -114,7 +93,7 @@
 
         $('#add_table').prop('disabled',!CanvasEditable);
         $('#drop_tables').prop('disabled',!CanvasEditable);
-
+        $('#input-group').prop('disabled',!CanvasEditable);
 
       var canvas = document.getElementById('canvas1');
       var canvasClone = canvas.cloneNode(true);
@@ -139,10 +118,26 @@
     });
 
     $('#add_table').click(function(){
-      var tableNumber = window.prompt("enter the table number:","");
-      var maxQty = window.prompt("enter the max Qty of people for tabel:","");
-      db.addTable(tableNumber,0,0,50,50,maxQty);
-      db.drawAllTables(s);
+      var tableNumber = $('#tbl-name').val();
+      // window.prompt("enter the table number:","");
+      var maxQty = $('#tbl-maxQty').val();
+
+      var height = $('#tbl-height').val();
+
+      var width = $('#tbl-width').val();
+
+      if (tableNumber != "" && maxQty !="" && height != "" && width !="") {
+        // window.prompt("enter the max Qty of people for tabel:","");
+        db.addTable(tableNumber,0,0,width,height,maxQty,0);
+        // db.drawAllTables(s);
+        // s = new CanvasState(document.getElementById('canvas1'),CanvasEditable);
+        // db.drawAllTables(s);
+        s.addShape(new Shape(s, 0, 0, width, height,tableNumber,maxQty,0,db.lastInsertRowId));
+
+      } else {
+        alert("Check table details");
+      }
+
     });
     </script>
 

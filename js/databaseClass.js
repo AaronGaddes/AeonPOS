@@ -36,24 +36,24 @@ Database.prototype.initDatabase = function() {
     // you can uncomment this next line if you want the User table to beempty each time the application runs
    // tx.executeSql( 'DROP TABLE User',nullHandler,nullHandler);
 
-     tx.executeSql( 'CREATE TABLE IF NOT EXISTS tables(tbl_id INTEGER NOT NULL PRIMARY KEY, tbl_name TEXT NOT NULL, tbl_posX INTEGER, tbl_posY INTEGER, tbl_width NUMBER, tbl_height NUMBER, tbl_maxQty INTEGER)',
+     tx.executeSql( 'CREATE TABLE IF NOT EXISTS tables(tbl_id INTEGER NOT NULL PRIMARY KEY, tbl_name TEXT NOT NULL, tbl_posX INTEGER, tbl_posY INTEGER, tbl_width NUMBER, tbl_height NUMBER, tbl_maxQty INTEGER, tbl_status INTEGER)',
      [],this.nullHandler,this.errorHandler);
 
    },this.errorHandler,this.successCallBack);
 };
 
-Database.prototype.addTable = function(name,posX,posY,width,height,maxQty) {
+Database.prototype.addTable = function(name,posX,posY,width,height,maxQty,status) {
   if (!window.openDatabase) {
    alert('Databases are not supported in this browser.');
    return;
  };
   this.db.transaction(function(tx){
-    tx.executeSql( 'INSERT INTO tables(tbl_name, tbl_posX, tbl_posY, tbl_width, tbl_height, tbl_maxQty)SELECT ?,?,?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM tables WHERE tbl_name = ?)',
-    [name,posX,posY,width,height,maxQty,name],this.nullHandler,this.errorHandler);
+    tx.executeSql( 'INSERT INTO tables(tbl_name, tbl_posX, tbl_posY, tbl_width, tbl_height, tbl_maxQty, tbl_status)SELECT ?,?,?,?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM tables WHERE tbl_name = ?)',
+    [name,posX,posY,width,height,maxQty,status,name],this.nullHandler,this.errorHandler);
   },this.errorHandler,this.successCallBack);
 };
 
-Database.prototype.updateTable = function(posX,posY,width,height,id) {
+Database.prototype.updateTable = function(posX,posY,width,height,maxQty,status,id) {
   if (!window.openDatabase) {
     alert('Databases are not supported in this browser.');
     return;
@@ -61,7 +61,7 @@ Database.prototype.updateTable = function(posX,posY,width,height,id) {
 
  // this is the section that actually inserts the values into the Usertable
   this.db.transaction(function(transaction) {
-    transaction.executeSql('UPDATE tables SET tbl_posX = ?, tbl_posY = ?,tbl_width = ?, tbl_height = ? WHERE tbl_id = ?',[posX,posY,width,height,id],
+    transaction.executeSql('UPDATE tables SET tbl_posX = ?, tbl_posY = ?,tbl_width = ?, tbl_height = ?, tbl_maxQty = ?, tbl_status = ? WHERE tbl_id = ?',[posX,posY,width,height,maxQty,status,id],
       this.nullHandler,this.errorHandler);
     });
 };
@@ -93,7 +93,8 @@ Database.prototype.drawAllTables = function(canvasState) {
           var len = result.rows.length, i;
           for (i = 0; i < len; i++) {
             console.log(result.rows[i]);
-            canvasState.addShape(new Shape(canvasState, result.rows[i].tbl_posX, result.rows[i].tbl_posY, result.rows[i].tbl_width, result.rows[i].tbl_height, 'rgba(0,205,0,0.7)', result.rows[i].tbl_name,result.rows[i].tbl_id,this.db));
+
+            canvasState.addShape(new Shape(canvasState, result.rows[i].tbl_posX, result.rows[i].tbl_posY, result.rows[i].tbl_width, result.rows[i].tbl_height, result.rows[i].tbl_name,result.rows[i].tbl_maxQty,result.rows[i].tbl_status,result.rows[i].tbl_id));
           }
         }
       },this.errorHandler);

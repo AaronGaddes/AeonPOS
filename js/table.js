@@ -12,7 +12,7 @@
 
 // Constructor for Shape objects to hold data for all drawn objects.
 // For now they will just be defined as rectangles.
-function Shape(state, x, y, w, h, fill, name,id,db) {
+function Shape(state, x, y, w, h, name, maxQty, status,id) {
   "use strict";
   // This is a very simple and unsafe constructor. All we're doing is checking if the values exist.
   // "x || 0" just means "if there is a value for x, use that. Otherwise use 0."
@@ -22,22 +22,39 @@ function Shape(state, x, y, w, h, fill, name,id,db) {
   this.y = y || 0;
   this.w = w || 1;
   this.h = h || 1;
-  this.fill = fill || '#AAAAAA';
   this.name = name || "x";
+  this.status = status || 0;
+  this.maxQty = maxQty || 4;
   this.id = id;
-  this.db = db;
 }
 
 // Draws this shape to a given context
 Shape.prototype.draw = function(ctx, optionalColor) {
   "use strict";
   var i, cur, half;
-  ctx.fillStyle = this.fill;
+  var tStatus = this.status;
+  var colour;
+  switch (tStatus) {
+    case 0:
+      colour = 'rgba(0,205,0,0.7)';
+      break;
+    case 1:
+      colour = 'rgba(0,0,205,0.7)';
+      break;
+    case 2:
+      colour = 'rgba(205,205,0,0.7)';
+      break;
+    case 3:
+      colour = 'rgba(205,0,0,0.7)';
+      break;
+    }
+  ctx.fillStyle = colour;
   ctx.fillRect(this.x, this.y, this.w, this.h);
 
   ctx.fillStyle = "#000000";
   ctx.textAlign = "center";
-  ctx.fillText(this.name, this.x+(this.w/2), this.y+(this.h/2));
+  ctx.font='18px Arial';
+  ctx.fillText(this.name + ' (' + this.maxQty + ')', this.x+(this.w/2), this.y+(this.h/2));
 
   if (this.state.selection === this) {
     ctx.strokeStyle = this.state.selectionColor;
@@ -152,7 +169,7 @@ function CanvasState(canvas,editable) {
   // Since we still want to use this particular CanvasState in the events we have to save a reference to it.
   // This is our reference!
   myState = this;
-if (this.editable) {
+if (myState.editable) {
   //fixes a problem where double clicking causes text to get selected on the canvas
   canvas.addEventListener('selectstart', function(e) { e.preventDefault(); return false; }, false);
   // Up, down, and move are for dragging
@@ -319,7 +336,7 @@ if (this.editable) {
 
       db.initDatabase();
       console.log('x = ' + myState.selection.x + ' y = ' + myState.selection.y + ' id = ' + myState.selection.id);
-      db.updateTable(myState.selection.x,myState.selection.y,myState.selection.w,myState.selection.h,myState.selection.id);
+      db.updateTable(myState.selection.x,myState.selection.y,myState.selection.w,myState.selection.h,myState.selection.maxQty,myState.selection.status,myState.selection.id);
     }
   }, true);
   // double click for making new shapes
@@ -327,7 +344,73 @@ if (this.editable) {
   //   var mouse = myState.getMouse(e);
   //   myState.addShape(new Shape(myState, mouse.x - 10, mouse.y - 10, 20, 20, 'rgba(0,255,0,.6)'));
   // }, true);
+} else {
+  //fixes a problem where double clicking causes text to get selected on the canvas
+  canvas.addEventListener('selectstart', function(e) { e.preventDefault(); return false; }, false);
+  // Up, down, and move are for dragging
+  canvas.addEventListener('mousedown', function(e) {
+    var mouse, mx, my, shapes, l, i, mySel;
+    if (myState.expectResize !== -1) {
+      myState.resizeDragging = true;
+      return;
+    }
+    mouse = myState.getMouse(e);
+    mx = mouse.x;
+    my = mouse.y;
+    shapes = myState.shapes;
+    l = shapes.length;
+    for (i = l-1; i >= 0; i -= 1) {
+      if (shapes[i].contains(mx, my)) {
+        mySel = shapes[i];
+        // Keep track of where in the object we clicked
+        // so we can move it smoothly (see mousemove)
+        myState.dragoffx = mx - mySel.x;
+        myState.dragoffy = my - mySel.y;
+        myState.dragging = true;
+        myState.selection = mySel;
+        myState.valid = false;
+        return;
+      }
+    }
+    // havent returned means we have failed to select anything.
+    // If there was an object selected, we deselect it
+    if (myState.selection) {
+      myState.selection = null;
+      myState.valid = false; // Need to clear the old selection border
+    }
+  }, true);
+
+  canvas.addEventListener('mouseup', function(e) {
+    myState.dragging = false;
+    myState.resizeDragging = false;
+    myState.expectResize = -1;
+    if (myState.selection !== null) {
+    console.log('selected: ' + myState.selection.name + ' | status: ' + myState.selection.status);
+    if(myState.selection.status == 3) {
+      myState.selection.status = 0;
+    } else {
+      myState.selection.status +=1;
+    }
+    console.log(myState.selection.status);
+    console.log(myState.shapes);
+    var db = new Database();
+
+    db.initDatabase();
+    console.log('x = ' + myState.selection.x + ' y = ' + myState.selection.y + ' id = ' + myState.selection.id);
+    db.updateTable(myState.selection.x,myState.selection.y,myState.selection.w,myState.selection.h,myState.selection.maxQty,myState.selection.status,myState.selection.id);
+
+  }
+  if (myState.selection) {
+    myState.selection = null;
+    myState.valid = false; // Need to clear the old selection border
+  }
+
+  }, true);
 }
+
+
+
+
   // **** Options! ****
 
   this.selectionColor = '#CC0000';
@@ -361,7 +444,8 @@ CanvasState.prototype.draw = function() {
     this.clear();
 
     // ** Add stuff you want drawn in the background all the time here **
-
+console.log("drawing...");
+console.log(shapes);
     // draw all shapes
     l = shapes.length;
     for (i = 0; i < l; i += 1) {
