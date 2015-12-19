@@ -10,6 +10,9 @@
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
+    <link href="css/jquery-ui.css" rel="stylesheet">
+    <link href="css/jquery-ui.structure.css" rel="stylesheet">
+    <link href="css/jquery-ui.theme.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -29,13 +32,13 @@
 
 <div id="input-group" class="input-group">
   <span class="input-group-addon" id="basic-addon1">#</span>
-  <input id="tbl-name" type="text" class="form-control" placeholder="table number" aria-describedby="basic-addon1">
+  <input id="tbl-name" type="number" class="form-control" placeholder="table number" aria-describedby="basic-addon1">
   <span class="input-group-addon" id="basic-addon1">MAX PAX</span>
-  <input id="tbl-maxQty" type="text" class="form-control" placeholder="max PAX" value="4" aria-describedby="basic-addon1">
+  <input id="tbl-maxQty" type="number" class="form-control" placeholder="max PAX" value="4" aria-describedby="basic-addon1">
   <span class="input-group-addon" id="basic-addon1">H</span>
-  <input id="tbl-height" type="text" class="form-control" placeholder="height" value="50" aria-describedby="basic-addon1">
+  <input id="tbl-height" type="number" class="form-control" placeholder="height" value="50" aria-describedby="basic-addon1">
   <span class="input-group-addon" id="basic-addon1">W</span>
-  <input id="tbl-width" type="text" class="form-control" placeholder="width" value="50" aria-describedby="basic-addon1">
+  <input id="tbl-width" type="number" class="form-control" placeholder="width" value="50" aria-describedby="basic-addon1">
 </div>
   <!-- <input type="label" class="form-control">Edit Tables</input> -->
 </div>
@@ -43,18 +46,28 @@
 <button id="drop_tables" class="btn btn-danger pull-right">Drop "tables" Table</button>
 
 <button id="add_table" class="btn btn-success">Add Table</button>
+<button id="update_table" class="btn btn-primary">Update Table</button>
 
 
 
             <canvas id="canvas1" width="100" height="100" style="border:1px solid #000000;">
             </canvas>
 
-
+            <div id="dialog" title="Basic dialog">
+              <h3>status: <span id="dlg-tbl_status"</span></h3>
+                <div class="btn-group" role="group" aria-label="...">
+  <button id="dlg-btn-Available" data-status="0" type="button" class="btn btn-default tbl-status">Available</button>
+  <button id="dlg-btn-Ocupied" data-status="1" type="button" class="btn btn-default tbl-status">Ocupied</button>
+  <button id="dlg-btn-RequiresCleaning" data-status="2" type="button" class="btn btn-default tbl-status">Requires Cleaning</button>
+  <button id="dlg-btn-Reserved" data-status="3" type="button" class="btn btn-default tbl-status">Reserved</button>
+</div>
+            </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="js/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui.js"></script>
 
 <script type="text/javascript" src="js/table.js"></script>
 
@@ -83,6 +96,7 @@
     var CanvasEditable = false;
 
     $('#add_table').prop('disabled',!CanvasEditable);
+    $('#update_table').prop('disabled',!CanvasEditable);
     $('#drop_tables').prop('disabled',!CanvasEditable);
     $('#input-group').prop('disabled',!CanvasEditable);
     var s = new CanvasState(document.getElementById('canvas1'),CanvasEditable);
@@ -92,6 +106,7 @@
       console.log(CanvasEditable);
 
         $('#add_table').prop('disabled',!CanvasEditable);
+        $('#update_table').prop('disabled',!CanvasEditable);
         $('#drop_tables').prop('disabled',!CanvasEditable);
         $('#input-group').prop('disabled',!CanvasEditable);
 
@@ -139,6 +154,41 @@
       }
 
     });
+
+    $('#update_table').click(function(){
+      var tableNumber = $('#tbl-name').val();
+      // window.prompt("enter the table number:","");
+      var maxQty = $('#tbl-maxQty').val();
+
+      var height = $('#tbl-height').val();
+
+      var width = $('#tbl-width').val();
+
+      if (tableNumber != "" && maxQty !="" && height != "" && width !="") {
+        // window.prompt("enter the max Qty of people for tabel:","");
+        //db.addTable(tableNumber,0,0,width,height,maxQty,0);
+        // db.drawAllTables(s);
+        // s = new CanvasState(document.getElementById('canvas1'),CanvasEditable);
+        // db.drawAllTables(s);
+        s.updateShape(tableNumber,maxQty,height,width,db);
+
+      } else {
+        alert("Check table details");
+      }
+
+    });
+
+
+
+$(function() {
+  $( "#dialog" ).dialog({
+  	autoOpen: false,
+  	width: 400
+  });
+
+  });
+
+
     </script>
 
     <!-- <script>

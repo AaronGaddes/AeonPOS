@@ -337,13 +337,17 @@ if (myState.editable) {
       db.initDatabase();
       console.log('x = ' + myState.selection.x + ' y = ' + myState.selection.y + ' id = ' + myState.selection.id);
       db.updateTable(myState.selection.x,myState.selection.y,myState.selection.w,myState.selection.h,myState.selection.maxQty,myState.selection.status,myState.selection.id);
+
+      $('#tbl-name').val(myState.selection.name);
+      $('#tbl-maxQty').val(myState.selection.maxQty);
+
+      $('#tbl-height').val(myState.selection.h);
+
+      $('#tbl-width').val(myState.selection.w);
+
     }
   }, true);
-  // double click for making new shapes
-  // canvas.addEventListener('dblclick', function(e) {
-  //   var mouse = myState.getMouse(e);
-  //   myState.addShape(new Shape(myState, mouse.x - 10, mouse.y - 10, 20, 20, 'rgba(0,255,0,.6)'));
-  // }, true);
+
 } else {
   //fixes a problem where double clicking causes text to get selected on the canvas
   canvas.addEventListener('selectstart', function(e) { e.preventDefault(); return false; }, false);
@@ -406,6 +410,178 @@ if (myState.editable) {
   }
 
   }, true);
+
+  // //double click for making new shapes
+  // canvas.addEventListener('mouseup', function(e) {
+  //   myState.dragging = false;
+  //   myState.resizeDragging = false;
+  //   myState.expectResize = -1;
+  //   // var mouse, mx, my, shapes, l, i, mySel;
+  //   //
+  //   // mouse = myState.getMouse(e);
+  //   // mx = mouse.x;
+  //   // my = mouse.y;
+  //   // shapes = myState.shapes;
+  //   // l = shapes.length;
+  //   // for (i = l-1; i >= 0; i -= 1) {
+  //   //   if (shapes[i].contains(mx, my)) {
+  //   //     mySel = shapes[i];
+  //   //     myState.selection = mySel;
+  //   //     console.log(mySel);
+  //   //     // Link to open the dialog
+  //   //
+  //   //     var tStatusId = mySel.status;
+  //   //     var tStatus = 0;
+  //   //     var colour;
+  //   //     switch (tStatusId) {
+  //   //       case 0:
+  //   //         tStatus = 'Available';
+  //   //         colour = 'rgba(0,205,0,0.7)';
+  //   //         break;
+  //   //       case 1:
+  //   //         tStatus = 'Ocupied';
+  //   //         colour = 'rgba(0,0,205,0.7)';
+  //   //         break;
+  //   //       case 2:
+  //   //         tStatus = 'Requires Cleaning';
+  //   //         colour = 'rgba(205,205,0,0.7)';
+  //   //         break;
+  //   //       case 3:
+  //   //         tStatus = 'Reserved';
+  //   //         colour = 'rgba(205,0,0,0.7)';
+  //   //         break;
+  //   //       }
+  //   //
+  //   //       $(".tbl-status").removeClass('active');
+  //   //       $(".tbl-status[data-status='"+tStatusId+"']").addClass('active');
+  //   //     $("#dlg-tbl_status").html(tStatus);
+  //   //     $(".ui-dialog-titlebar").css("background",colour);
+  //   //
+  //   //     $( "#dialog" ).dialog({
+  //   //       autoOpen: false,
+  //   //       title: "Table: "+ myState.selection.name + " ("+ tStatus +")",
+  //   //       width: 500,
+  //   //       buttons: [
+  //   //         {
+  //   //           text: "Ok",
+  //   //           click: function() {
+  //   //             var newStatus = 0;
+  //   //             newStatus = $(".tbl-status.active").attr("data-status");
+  //   //             myState.selection.status = newStatus;
+  //   //             mySel.status = newStatus;
+  //   //             var db = new Database();
+  //   //
+  //   //             db.initDatabase();
+  //   //             console.log('status = ' + myState.selection.status + ' id = ' + myState.selection.id);
+  //   //             db.updateTable(myState.selection.x,myState.selection.y,myState.selection.w,myState.selection.h,myState.selection.maxQty,myState.selection.status,myState.selection.id);
+  //   //
+  //   //             $( this ).dialog( "close" );
+  //   //             //myState.valid = false;
+  //   //             return;
+  //   //           }
+  //   //         },
+  //   //         {
+  //   //           text: "Cancel",
+  //   //           click: function() {
+  //   //             $( this ).dialog( "close" );
+  //   //           }
+  //   //         }
+  //   //       ]
+  //   //     });
+  //   //
+  //   //       $( "#dialog" ).dialog( "open" );
+  //   //
+  //   //       $(".tbl-status").click(function(){
+  //   //         $(".tbl-status").removeClass('active');
+  //   //         $(this).addClass('active');
+  //   //       });
+  //   //     return;
+  //   //   }
+  //   // }
+  //   // // havent returned means we have failed to select anything.
+  //   // // If there was an object selected, we deselect it
+  //
+  //     if (myState.selection !== null) {
+  //           var tStatusId = myState.selection.status;
+  //           var tStatus = 0;
+  //           var colour;
+  //           switch (tStatusId) {
+  //             case 0:
+  //               tStatus = 'Available';
+  //               colour = 'rgba(0,205,0,0.7)';
+  //               break;
+  //             case 1:
+  //               tStatus = 'Ocupied';
+  //               colour = 'rgba(0,0,205,0.7)';
+  //               break;
+  //             case 2:
+  //               tStatus = 'Requires Cleaning';
+  //               colour = 'rgba(205,205,0,0.7)';
+  //               break;
+  //             case 3:
+  //               tStatus = 'Reserved';
+  //               colour = 'rgba(205,0,0,0.7)';
+  //               break;
+  //             }
+  //
+  //             $(".tbl-status").removeClass('active');
+  //             $(".tbl-status[data-status='"+tStatusId+"']").addClass('active');
+  //           $("#dlg-tbl_status").html(tStatus);
+  //           $(".ui-dialog-titlebar").css("background",colour);
+  //
+  //           $( "#dialog" ).dialog({
+  //             autoOpen: false,
+  //             title: "Table: "+ myState.selection.name + " ("+ tStatus +")",
+  //             width: 500,
+  //             buttons: [
+  //               {
+  //                 text: "Ok",
+  //                 click: function() {
+  //                   var newStatus = 0;
+  //                   newStatus = $(".tbl-status.active").attr("data-status");
+  //                   myState.selection.status = newStatus;
+  //
+  //                   var db = new Database();
+  //
+  //                   db.initDatabase();
+  //                   console.log('status = ' + myState.selection.status + ' id = ' + myState.selection.id);
+  //                   db.updateTable(myState.selection.x,myState.selection.y,myState.selection.w,myState.selection.h,myState.selection.maxQty,myState.selection.status,myState.selection.id);
+  //
+  //                   $( this ).dialog( "close" );
+  //                   //myState.valid = false;
+  //                   return;
+  //                 }
+  //               },
+  //               {
+  //                 text: "Cancel",
+  //                 click: function() {
+  //                   $( this ).dialog( "close" );
+  //                 }
+  //               }
+  //             ]
+  //           });
+  //
+  //             $( "#dialog" ).dialog( "open" );
+  //
+  //             $(".tbl-status").click(function(){
+  //               $(".tbl-status").removeClass('active');
+  //               $(this).addClass('active');
+  //             });
+  //           return;
+  //
+  //     // var db = new Database();
+  //     //
+  //     // db.initDatabase();
+  //     // console.log('x = ' + myState.selection.x + ' y = ' + myState.selection.y + ' id = ' + myState.selection.id);
+  //     // db.updateTable(myState.selection.x,myState.selection.y,myState.selection.w,myState.selection.h,myState.selection.maxQty,myState.selection.status,myState.selection.id);
+  //
+  //   }
+  //   if (myState.selection) {
+  //     myState.selection = null;
+  //     myState.valid = false; // Need to clear the old selection border
+  //   }
+  //
+  // }, true);
 }
 
 
@@ -424,6 +600,22 @@ if (myState.editable) {
 CanvasState.prototype.addShape = function(shape) {
   "use strict";
   this.shapes.push(shape);
+  this.valid = false;
+};
+
+CanvasState.prototype.updateShape = function(tableNumber,maxQty,height,width,db) {
+  "use strict";
+  if (this.selection !== null) {
+    this.selection.name = tableNumber;
+    this.selection.maxQty = maxQty;
+    this.selection.h = height;
+    this.selection.w = width;
+    //var db = new Database();
+
+    //db.initDatabase();
+    console.log('x = ' + this.selection.x + ' y = ' + this.selection.y + ' id = ' + this.selection.id);
+    db.updateTable(this.selection.x,this.selection.y,this.selection.w,this.selection.h,this.selection.maxQty,this.selection.status,this.selection.id);
+  }
   this.valid = false;
 };
 
